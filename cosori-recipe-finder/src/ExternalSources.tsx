@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, Search, Youtube, BookmarkPlus, Trash2 } from 'lucide-react'
+import { ExternalLink, Search, Video, BookmarkPlus, Trash2 } from 'lucide-react'
 
 import type { Recipe } from './recipes'
 
@@ -93,7 +93,7 @@ export default function ExternalSources({ recipes }: { recipes: Recipe[] }) {
       <label htmlFor="external-term">検索キーワード</label>
       <input id="external-term" value={term} onChange={e => setTerm(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') searchUrl('youtube') }} placeholder="例：COSORI 鶏むね肉、ノンフライヤー お菓子" />
       <div className="external-search-actions">
-        <button onClick={() => searchUrl('youtube')}><Youtube size={17}/> YouTubeで検索 <ExternalLink size={13}/></button>
+        <button onClick={() => searchUrl('youtube')}><Video size={17}/> YouTubeで検索 <ExternalLink size={13}/></button>
         <button onClick={() => searchUrl('note')}><Search size={16}/> note記事を検索 <ExternalLink size={13}/></button>
       </div>
     </div>
