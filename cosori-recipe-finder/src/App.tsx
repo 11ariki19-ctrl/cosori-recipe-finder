@@ -103,4 +103,17 @@ function App() {
   </div>
 }
 
-function scaleIngredient(item: string, originalServings: number, targetServings: number) {\n  const ratio = targetServings / Math.max(1, originalServings)\n  return item.replace(/\\d+(?:\\.\\d+)?/g, match => { const n = Number(match) * ratio; return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10) })\n}\n\nfunction GenUICopyShopping(items: string[]) {\n  const text = items.join('\\n')\n  if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(text)\n}\n\nexport default App
+function scaleIngredient(item: string, originalServings: number, targetServings: number) {
+  const ratio = targetServings / Math.max(1, originalServings)
+  return item.replace(/\d+(?:\.\d+)?/g, match => {
+    const n = Number(match) * ratio
+    return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10)
+  })
+}
+
+function GenUICopyShopping(items: string[]) {
+  const text = items.join('\n')
+  if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(text)
+}
+
+export default App
