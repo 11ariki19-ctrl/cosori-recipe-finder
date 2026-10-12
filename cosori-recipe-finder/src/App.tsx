@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Search, Heart, Clock3, Thermometer, Users, SlidersHorizontal, X, ChefHat, ArrowUpRight, Sparkles, Utensils, BookmarkCheck } from 'lucide-react'
 import { recipes, type Recipe } from './recipes'
+import ExternalSources from './ExternalSources'
 
 const categories = ['すべて', '肉料理', '魚料理', '野菜', 'おつまみ', '朝食', 'スイーツ']
 const formatSource = (recipe: Recipe) => recipe.sourceType === 'official' ? 'COSORI公式' : 'オリジナル'
@@ -85,6 +86,8 @@ function App() {
           <div className="recipe-info"><div className="recipe-meta"><span className={recipe.sourceType === 'official' ? 'source official' : 'source'}>{formatSource(recipe)}</span><span className="difficulty">{recipe.difficulty}</span></div><button className="recipe-title" onClick={() => { setSelected(recipe); setServingCount(recipe.servings) }}>{recipe.title}</button><p className="recipe-description">{recipe.description}</p><div className="recipe-bottom"><span><Clock3 size={15}/>{recipe.minutes}分</span><span><Thermometer size={15}/>{recipe.temperature == null ? '公式ページ参照' : `${recipe.temperature}℃`}</span><button onClick={() => setSelected(recipe)}>作り方を見る <ArrowUpRight size={14}/></button></div></div>
         </article>)}</div> : <div className="empty-state"><span>🥣</span><h3>レシピが見つかりませんでした</h3><p>検索ワードや絞り込み条件を変えてみてください。</p><button className="primary-button" onClick={() => {setQuery('');setCategory('すべて');setMaxMinutes('すべて');setSource('すべて');setFavoritesOnly(false)}}>すべてのレシピを見る</button></div>}
       </section>
+
+      <ExternalSources />
 
       <section className="source-note"><div className="note-icon"><BookmarkCheck size={20}/></div><div><b>レシピの出典について</b><p>「COSORI公式」と表示されたレシピは、VeSync Japan公式レシピ一覧に掲載されたタイトル・所要時間を登録しています。材料・温度・手順は公式ページでご確認ください。</p><a href="https://vesync.jp/pages/recipe" target="_blank" rel="noreferrer">COSORI公式レシピ一覧を開く ↗</a></div></section>
     </main>
