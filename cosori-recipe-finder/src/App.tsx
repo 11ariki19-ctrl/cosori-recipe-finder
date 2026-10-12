@@ -7,6 +7,18 @@ const categories = ['すべて', '肉料理', '魚料理', '野菜', 'おつま�
 const formatSource = (recipe: Recipe) => recipe.sourceType === 'official' ? 'COSORI公式' : 'オリジナル'
 
 function App() {
+  const [customRecipes, setCustomRecipes] = useState<Recipe[]>(() => { try { const v = JSON.parse(localStorage.getItem('cosori-custom-recipes-v1') || '[]'); return Array.isArray(v) ? v : [] } catch { return [] } })
+  const [editorOpen, setEditorOpen] = useState(false)
+  const [newTitle, setNewTitle] = useState('')
+  const [newCategory, setNewCategory] = useState('肉料理')
+  const [newDescription, setNewDescription] = useState('')
+  const [newIngredients, setNewIngredients] = useState('')
+  const [newSteps, setNewSteps] = useState('')
+  const [newMinutes, setNewMinutes] = useState('15')
+  const [newTemperature, setNewTemperature] = useState('180')
+  const [newServings, setNewServings] = useState('2')
+  const [libraryMessage, setLibraryMessage] = useState('')
+  const allRecipes = useMemo(() => [...recipes, ...customRecipes], [customRecipes])
   const [query, setQuery] = useState('')
   const [pantry, setPantry] = useState('')
   const [shoppingOpen, setShoppingOpen] = useState(false)
@@ -22,6 +34,34 @@ function App() {
   })
   const [selected, setSelected] = useState<Recipe | null>(null)
 
+  function saveCustomRecipe() {
+    if (!newTitle.trim()) { setLibraryMessage('料理名を入力してください。'); return }
+    const ingredients = newIngredients.split(/\\n/).map(x=>x.trim()).filter(Boolean)
+    const steps = newSteps.split(/\\n/).map(x=>x.trim()).filter(Boolean)
+    const item: Recipe = { id: `custom-${Date.now()}`, title:newTitle.trim(), category:newCategory, sourceType:'original', sourceName:'ユーザー創作レシピ', minutes:Math.max(1,Number(newMinutes)||15), temperature: newTemperature.trim()==='' ? null : Math.max(0,Number(newTemperature)||0), servings:Math.max(1,Number(newServings)||2), difficulty:'かんたん', description:newDescription.trim()||'ユーザーが登録した創作レシピ。', ingredients, steps, tags:['創作','ユーザー登録',...ingredients.map(x=>x.split(/[ 　]/)[0]).filter(Boolean)], emoji:'🍳', color:'#f8eadc' }
+    const next=[item,...customRecipes]
+    setCustomRecipes(next)
+    try { localStorage.setItem('cosori-custom-recipes-v1',JSON.stringify(next)); setLibraryMessage('レシピを登録しました。上の検索欄から探せます。'); setNewTitle('');setNewDescription('');setNewIngredients('');setNewSteps('');setEditorOpen(false) } catch { setLibraryMessage('保存できませんでした。ブラウザの保存容量を確認してください。') }
+  }
+  function exportRecipeJson() {
+    const payload={format:'cosori-recipe-library',version:1,exportedAt:new Date().toISOString(),customRecipes}
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'})
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='cosori-recipe-library.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
+  }
+  async function importRecipeJson(event: React.ChangeEvent<HTMLInputElement>) {
+    const file=event.target.files?.[0];if(!file)return
+    try {
+      const parsed=JSON.parse(await file.text())
+      const incoming=Array.isArray(parsed)?parsed:parsed.customRecipes
+      if(!Array.isArray(incoming)||!incoming.every((r:any)=>r&&typeof r.title==='string'&&typeof r.category==='string'&&Array.isArray(r.ingredients)&&Array.isArray(r.steps))) throw new Error('format')
+      const normalized:Recipe[]=incoming.map((r:any,i:number)=>({...r,id:typeof r.id==='string'?r.id:`import-${Date.now()}-${i}`,sourceType:'original',sourceName:r.sourceName||'インポートしたレシピ',temperature:typeof r.temperature==='number'?r.temperature:null,tags:Array.isArray(r.tags)?r.tags:[],minutes:Math.max(1,Number(r.minutes)||15),servings:Math.max(1,Number(r.servings)||2),difficulty:r.difficulty==='ふつう'?'ふつう':'かんたん',description:typeof r.description==='string'?r.description:'インポートしたレシピ',emoji:typeof r.emoji==='string'?r.emoji:'🍳',color:typeof r.color==='string'?r.color:'#f8eadc'}))
+      const existing=new Set(customRecipes.map(r=>r.title+'|'+r.ingredients.join('|')))
+      const additions=normalized.filter(r=>!existing.has(r.title+'|'+r.ingredients.join('|')))
+      const next=[...additions,...customRecipes];setCustomRecipes(next);localStorage.setItem('cosori-custom-recipes-v1',JSON.stringify(next));setLibraryMessage(`${additions.length}件を取り込みました（重複は除外）。`)
+    } catch { setLibraryMessage('読み込みに失敗しました。COSORIのJSONバックアップを選択してください。') }
+    event.target.value=''
+  }
+
   const saveShopping = (next: string[]) => { setShoppingItems(next); localStorage.setItem('cosori-shopping', JSON.stringify(next)) }
   const addRecipeToShopping = (recipe: Recipe) => { const next = [...new Set([...shoppingItems, ...recipe.ingredients])]; saveShopping(next); setShoppingOpen(true) }
   const toggleShoppingCheck = (item: string) => { const next = checkedShopping.includes(item) ? checkedShopping.filter(x => x !== item) : [...checkedShopping, item]; setCheckedShopping(next); localStorage.setItem('cosori-shopping-checked', JSON.stringify(next)) }
@@ -33,7 +73,7 @@ function App() {
     })
   }
 
-  const filtered = useMemo(() => recipes.filter(recipe => {
+  const filtered = useMemo(() => allRecipes.filter(recipe => {
     const haystack = [recipe.title, recipe.category, recipe.description, ...recipe.ingredients, ...recipe.tags].join(' ').toLowerCase()
     const matchesQuery = query.trim() === '' || haystack.includes(query.trim().toLowerCase())
     const pantryTerms = pantry.split(/[、,，\s]+/).map(x => x.trim().toLowerCase()).filter(Boolean)
@@ -43,7 +83,7 @@ function App() {
     const matchesTime = maxMinutes === 'すべて' || recipe.minutes <= Number(maxMinutes)
     const matchesSource = source === 'すべて' || recipe.sourceType === source
     return matchesQuery && matchesPantry && matchesCategory && matchesTime && matchesSource && (!favoritesOnly || favorites.includes(recipe.id))
-  }), [query, pantry, category, maxMinutes, source, favoritesOnly, favorites])
+  }), [allRecipes, query, pantry, category, maxMinutes, source, favoritesOnly, favorites])
 
   return <div className="app-shell">
     <header className="topbar">
@@ -87,7 +127,22 @@ function App() {
         </article>)}</div> : <div className="empty-state"><span>🥣</span><h3>レシピが見つかりませんでした</h3><p>検索ワードや絞り込み条件を変えてみてください。</p><button className="primary-button" onClick={() => {setQuery('');setCategory('すべて');setMaxMinutes('すべて');setSource('すべて');setFavoritesOnly(false)}}>すべてのレシピを見る</button></div>}
       </section>
 
-      <ExternalSources recipes={recipes} />
+      <section className="recipe-tools">
+        <div className="section-heading"><div><span className="eyebrow orange">YOUR RECIPE LIBRARY</span><h2>創作レシピ・データ管理</h2></div><span className="result-count"><b>{allRecipes.length}</b> 件登録</span></div>
+        <p>自分で考えた料理を登録すると、上のレシピ検索・食材検索・お気に入りに追加されます。データはこのブラウザに保存されます。</p>
+        <div className="recipe-tool-actions"><button className="primary-button" onClick={() => {setEditorOpen(v => !v);setLibraryMessage('')}}>{editorOpen ? '入力フォームを閉じる' : '＋ 創作レシピを登録'}</button><button className="reset-button" onClick={exportRecipeJson}>JSONバックアップを出力</button><label className="import-json-button">JSONを読み込む<input type="file" accept=".json,application/json" onChange={importRecipeJson} hidden /></label></div>
+        {libraryMessage && <p className="library-message" role="status">{libraryMessage}</p>}
+        {editorOpen && <div className="recipe-editor">
+          <label>料理名<input value={newTitle} onChange={e=>setNewTitle(e.target.value)} placeholder="例：味噌チーズ焼きおにぎり" /></label>
+          <label>分類<select value={newCategory} onChange={e=>setNewCategory(e.target.value)}>{categories.filter(x=>x!=='すべて').map(x=><option key={x}>{x}</option>)}</select></label>
+          <label>料理の説明<textarea value={newDescription} onChange={e=>setNewDescription(e.target.value)} placeholder="味や工夫、創作した理由など" rows={2}/></label>
+          <label>材料（1行に1つ）<textarea value={newIngredients} onChange={e=>setNewIngredients(e.target.value)} placeholder={'ごはん 200g\n味噌 小さじ1\nチーズ 20g'} rows={4}/></label>
+          <label>作り方（1行に1手順）<textarea value={newSteps} onChange={e=>setNewSteps(e.target.value)} placeholder={'材料を混ぜる\n形を整える\n加熱して焼き色をつける'} rows={4}/></label>
+          <div className="recipe-editor-numbers"><label>調理時間（分）<input type="number" min="1" max="600" value={newMinutes} onChange={e=>setNewMinutes(e.target.value)}/></label><label>温度（℃）<input type="number" min="0" max="250" value={newTemperature} onChange={e=>setNewTemperature(e.target.value)}/></label><label>人数<input type="number" min="1" max="50" value={newServings} onChange={e=>setNewServings(e.target.value)}/></label></div>
+          <button className="primary-button" onClick={saveCustomRecipe}>レシピを登録する</button>
+        </div>}
+      </section>
+      <ExternalSources recipes={allRecipes} />
 
       <section className="source-note"><div className="note-icon"><BookmarkCheck size={20}/></div><div><b>レシピの出典について</b><p>「COSORI公式」と表示されたレシピは、VeSync Japan公式レシピ一覧に掲載されたタイトル・所要時間を登録しています。材料・温度・手順は公式ページでご確認ください。</p><a href="https://vesync.jp/pages/recipe" target="_blank" rel="noreferrer">COSORI公式レシピ一覧を開く ↗</a></div></section>
     </main>
