@@ -37,7 +37,7 @@ function App() {
   function saveCustomRecipe() {
     if (!newTitle.trim()) { setLibraryMessage('料理名を入力してください。'); return }
     const ingredients = newIngredients.split(/\\n/).map(x=>x.trim()).filter(Boolean)
-    const steps = newSteps.split(/\\n/).map(x=>x.trim()).filter(Boolean)
+    const steps = newSteps.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)
     const item: Recipe = { id: `custom-${Date.now()}`, title:newTitle.trim(), category:newCategory, sourceType:'original', sourceName:'ユーザー創作レシピ', minutes:Math.max(1,Number(newMinutes)||15), temperature: newTemperature.trim()==='' ? null : Math.max(0,Number(newTemperature)||0), servings:Math.max(1,Number(newServings)||2), difficulty:'かんたん', description:newDescription.trim()||'ユーザーが登録した創作レシピ。', ingredients, steps, tags:['創作','ユーザー登録',...ingredients.map(x=>x.split(/[ 　]/)[0]).filter(Boolean)], emoji:'🍳', color:'#f8eadc' }
     const next=[item,...customRecipes]
     setCustomRecipes(next)
