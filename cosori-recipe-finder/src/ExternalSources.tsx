@@ -42,19 +42,19 @@ export default function ExternalSources({ recipes }: { recipes: Recipe[] }) {
       `温度：${recipe.temperature == null ? '未確認／出典参照' : recipe.temperature + '℃'}`,
       `人数：${recipe.servings}人分`,
       `説明：${recipe.description}`,
-      `材料：\\n${recipe.ingredients.length ? recipe.ingredients.map(x => '- ' + x).join('\\n') : '未登録'}`,
-      `手順：\\n${recipe.steps.length ? recipe.steps.map((x, i) => (i + 1) + '. ' + x).join('\\n') : '未登録'}`,
+      `材料：\n${recipe.ingredients.length ? recipe.ingredients.map(x => '- ' + x).join('\n') : '未登録'}`,
+      `手順：\n${recipe.steps.length ? recipe.steps.map((x, i) => (i + 1) + '. ' + x).join('\n') : '未登録'}`,
       `検索タグ：${recipe.tags.join('、')}`,
-    ].join('\\n')).join('\\n\\n' + '='.repeat(36) + '\\n\\n')
-    const sourceText = sources.length ? sources.map((s, i) => `【外部リンク ${i + 1}】${s.title}\\n種別：${s.type}\\nURL：${s.url}\\n保存日：${s.savedAt}`).join('\\n\\n') : '保存された外部リンクはありません。'
-    const content = `COSORI TABLE レシピ情報テキスト出力\\n出力日：${new Date().toLocaleString('ja-JP')}\\n登録レシピ数：${recipes.length}\\n\\n${recipeText}\\n\\n【保存した外部リンク】\\n${sourceText}\\n\\n注意：外部リンク先の動画・記事本文を自動取得したものではありません。未登録の材料・手順は「未登録」と表示しています。\\n`
+    ].join('\n')).join('\n\n' + '='.repeat(36) + '\n\n')
+    const sourceText = sources.length ? sources.map((s, i) => `【外部リンク ${i + 1}】${s.title}\n種別：${s.type}\nURL：${s.url}\n保存日：${s.savedAt}`).join('\n\n') : '保存された外部リンクはありません。'
+    const content = `COSORI TABLE レシピ情報テキスト出力\n出力日：${new Date().toLocaleString('ja-JP')}\n登録レシピ数：${recipes.length}\n\n${recipeText}\n\n【保存した外部リンク】\n${sourceText}\n\n注意：外部リンク先の動画・記事本文を自動取得したものではありません。未登録の材料・手順は「未登録」と表示しています。\n`
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const objectUrl = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = objectUrl
     anchor.download = `cosori-recipes-${new Date().toISOString().slice(0, 10)}.txt`
     anchor.click()
-    URL.revokeObjectURL(objectUrl)
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
   }
   const searchUrl = (site: 'youtube' | 'note') => {
     const query = term.trim() || 'COSORI エアフライヤー レシピ'
