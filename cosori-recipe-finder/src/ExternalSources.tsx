@@ -5,6 +5,12 @@ import type { Recipe } from './recipes'
 
 type SavedSource = { id: string; title: string; url: string; type: 'YouTube' | 'note' | 'その他'; savedAt: string }
 
+const CURATED_REFERENCES = [
+  { title: '暮らしDays：参考記事', url: 'https://ameblo.jp/kurashi-days/entry-12972607047.html', type: 'ブログ' },
+  { title: 'YouTube参考動画 1', url: 'https://www.youtube.com/watch?v=7cv5mAaIUcw', type: 'YouTube' },
+  { title: 'YouTube参考動画 2', url: 'https://www.youtube.com/watch?v=ToZyZYPkUCA', type: 'YouTube' },
+]
+
 const STORAGE_KEY = 'cosori-external-sources'
 
 function readSources(): SavedSource[] {
@@ -82,6 +88,7 @@ export default function ExternalSources({ recipes }: { recipes: Recipe[] }) {
     <div className="external-heading"><div><span className="eyebrow orange">DISCOVER MORE RECIPES</span><h2>外部サイトからレシピを探す</h2></div><span className="external-count">{sources.length}件保存</span></div>
     <p className="external-intro">YouTube動画やnoteの記事を検索し、気になったレシピのURLをこの端末に保存できます。保存したリンクはあとから見返せます。</p>
     <button className="export-text-button" onClick={exportText}>登録レシピと保存リンクをテキスト出力（.txt）</button>
+    <div className="saved-sources"><h3>今回追加した参考リンク</h3>{CURATED_REFERENCES.map(item => <article className="saved-source" key={item.url}><div><span className="source-tag source-tag-other">{item.type}</span><b>{item.title}</b><a href={item.url} target="_blank" rel="noreferrer">{item.url} <ExternalLink size={12}/></a></div></article>)}</div>
     <div className="external-search">
       <label htmlFor="external-term">検索キーワード</label>
       <input id="external-term" value={term} onChange={e => setTerm(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') searchUrl('youtube') }} placeholder="例：COSORI 鶏むね肉、ノンフライヤー お菓子" />
