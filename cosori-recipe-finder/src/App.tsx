@@ -87,7 +87,7 @@ function App() {
         </article>)}</div> : <div className="empty-state"><span>🥣</span><h3>レシピが見つかりませんでした</h3><p>検索ワードや絞り込み条件を変えてみてください。</p><button className="primary-button" onClick={() => {setQuery('');setCategory('すべて');setMaxMinutes('すべて');setSource('すべて');setFavoritesOnly(false)}}>すべてのレシピを見る</button></div>}
       </section>
 
-      <ExternalSources />
+      <ExternalSources recipes={recipes} />
 
       <section className="source-note"><div className="note-icon"><BookmarkCheck size={20}/></div><div><b>レシピの出典について</b><p>「COSORI公式」と表示されたレシピは、VeSync Japan公式レシピ一覧に掲載されたタイトル・所要時間を登録しています。材料・温度・手順は公式ページでご確認ください。</p><a href="https://vesync.jp/pages/recipe" target="_blank" rel="noreferrer">COSORI公式レシピ一覧を開く ↗</a></div></section>
     </main>
