@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { ExternalLink, Search, Youtube, BookmarkPlus, Trash2 } from 'lucide-react'
 
+import type { Recipe } from './recipes'
+
 type SavedSource = { id: string; title: string; url: string; type: 'YouTube' | 'note' | 'その他'; savedAt: string }
 
 const STORAGE_KEY = 'cosori-external-sources'
@@ -18,7 +20,7 @@ function classifyUrl(url: string): SavedSource['type'] {
   return 'その他'
 }
 
-export default function ExternalSources() {
+export default function ExternalSources({ recipes }: { recipes: Recipe[] }) {
   const [term, setTerm] = useState('COSORI エアフライヤー レシピ')
   const [url, setUrl] = useState('')
   const [title, setTitle] = useState('')
@@ -28,6 +30,31 @@ export default function ExternalSources() {
   const persist = (next: SavedSource[]) => {
     setSources(next)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  }
+  const exportText = () => {
+    const recipeText = recipes.map((recipe, index) => [
+      `【レシピ ${index + 1}】${recipe.title}`,
+      `分類：${recipe.category}`,
+      `種類：${recipe.sourceType === 'official' ? '公式' : 'オリジナル'}`,
+      `出典：${recipe.sourceName}`,
+      `出典URL：${recipe.sourceUrl || 'なし'}`,
+      `調理時間：${recipe.minutes}分`,
+      `温度：${recipe.temperature == null ? '未確認／出典参照' : recipe.temperature + '℃'}`,
+      `人数：${recipe.servings}人分`,
+      `説明：${recipe.description}`,
+      `材料：\\n${recipe.ingredients.length ? recipe.ingredients.map(x => '- ' + x).join('\\n') : '未登録'}`,
+      `手順：\\n${recipe.steps.length ? recipe.steps.map((x, i) => (i + 1) + '. ' + x).join('\\n') : '未登録'}`,
+      `検索タグ：${recipe.tags.join('、')}`,
+    ].join('\\n')).join('\\n\\n' + '='.repeat(36) + '\\n\\n')
+    const sourceText = sources.length ? sources.map((s, i) => `【外部リンク ${i + 1}】${s.title}\\n種別：${s.type}\\nURL：${s.url}\\n保存日：${s.savedAt}`).join('\\n\\n') : '保存された外部リンクはありません。'
+    const content = `COSORI TABLE レシピ情報テキスト出力\\n出力日：${new Date().toLocaleString('ja-JP')}\\n登録レシピ数：${recipes.length}\\n\\n${recipeText}\\n\\n【保存した外部リンク】\\n${sourceText}\\n\\n注意：外部リンク先の動画・記事本文を自動取得したものではありません。未登録の材料・手順は「未登録」と表示しています。\\n`
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const objectUrl = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = objectUrl
+    anchor.download = `cosori-recipes-${new Date().toISOString().slice(0, 10)}.txt`
+    anchor.click()
+    URL.revokeObjectURL(objectUrl)
   }
   const searchUrl = (site: 'youtube' | 'note') => {
     const query = term.trim() || 'COSORI エアフライヤー レシピ'
