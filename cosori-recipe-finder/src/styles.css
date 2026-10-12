@@ -44,3 +44,5 @@
 .source-tag{font-size:9px;border-radius:4px;padding:4px 6px;width:max-content}
 .source-tag-youtube{background:#f8e8e6;color:#a9362e}.source-tag-note{background:#e7f3e9;color:#36704a}.source-tag-other{background:#efede7;color:#6e695f}
 @media(max-width:700px){.external-heading h2{font-size:19px}.external-search,.source-save-form{padding:12px}.source-save-fields{grid-template-columns:1fr}.external-search-actions button{flex:1;font-size:10px;padding:10px 8px}.saved-source b{font-size:11px}}
+
+.export-text-button{display:block;width:100%;margin:0 0 14px;border:1px solid #e8b58f;background:#fff6ed;color:#8c4a26;border-radius:9px;padding:12px;font-size:12px;font-weight:700;cursor:pointer}.export-text-button:hover{background:#ffeddd}
