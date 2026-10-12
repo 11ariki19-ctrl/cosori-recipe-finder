@@ -81,6 +81,7 @@ export default function ExternalSources({ recipes }: { recipes: Recipe[] }) {
   return <section className="external-sources">
     <div className="external-heading"><div><span className="eyebrow orange">DISCOVER MORE RECIPES</span><h2>外部サイトからレシピを探す</h2></div><span className="external-count">{sources.length}件保存</span></div>
     <p className="external-intro">YouTube動画やnoteの記事を検索し、気になったレシピのURLをこの端末に保存できます。保存したリンクはあとから見返せます。</p>
+    <button className="export-text-button" onClick={exportText}>登録レシピと保存リンクをテキスト出力（.txt）</button>
     <div className="external-search">
       <label htmlFor="external-term">検索キーワード</label>
       <input id="external-term" value={term} onChange={e => setTerm(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') searchUrl('youtube') }} placeholder="例：COSORI 鶏むね肉、ノンフライヤー お菓子" />
