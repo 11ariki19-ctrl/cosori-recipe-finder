@@ -19,7 +19,7 @@ export type Recipe = {
 
 // 温度・時間は試作上の目安です。食材の厚みや機種に応じて調整してください。
 // official のレシピは、掲載元の確認が完了してから出典URLと内容を登録してください。
-export const recipes: Recipe[] = [
+const baseRecipes: Recipe[] = [
   { id:'karaage', title:'ジューシー鶏のから揚げ', category:'肉料理', sourceType:'original', sourceName:'オリジナルレシピ', minutes:22, temperature:190, servings:2, difficulty:'かんたん', description:'外はカリッと、中はジューシー。油を控えめに楽しむ定番おかず。', ingredients:['鶏もも肉 300g','しょうゆ 大さじ1','酒 大さじ1','おろししょうが 小さじ1','片栗粉 大さじ3','サラダ油 少量'], steps:['鶏肉をひと口大に切り、しょうゆ・酒・しょうがを揉み込み15分置く。','汁気を軽く切って片栗粉をまぶし、表面に油を薄く吹きかける。','バスケットに重ならないように並べ、190℃で約10〜12分加熱する。','裏返してさらに8〜10分加熱し、中心まで十分に火が通ったことを確認する。'], tags:['鶏肉','から揚げ','夕食','人気'], emoji:'🍗', color:'#fff0df' },
   { id:'potato', title:'ほくほくフライドポテト', category:'野菜', sourceType:'original', sourceName:'オリジナルレシピ', minutes:25, temperature:195, servings:2, difficulty:'かんたん', description:'じゃがいもから作る、外カリ中ほくのポテト。', ingredients:['じゃがいも 2個','オリーブオイル 小さじ2','塩 少々','黒こしょう お好みで'], steps:['じゃがいもをスティック状に切り、水に10分さらす。','水気をよく拭き、オイルと和える。','195℃で約15分加熱し、途中でバスケットを振る。','焼き色を見ながら追加加熱し、塩を振る。'], tags:['じゃがいも','ベジタリアン','おやつ','子ども'], emoji:'🍟', color:'#fff4c9' },
   { id:'salmon', title:'鮭のハーブ焼き', category:'魚料理', sourceType:'original', sourceName:'オリジナルレシピ', minutes:14, temperature:180, servings:2, difficulty:'かんたん', description:'ハーブとレモンで香りよく。忙しい日のメインにも。', ingredients:['生鮭 2切れ','オリーブオイル 小さじ1','塩・こしょう 少々','乾燥ハーブ 少々','レモン 2切れ'], steps:['鮭の水気を拭き、塩・こしょう・ハーブを振る。','オイルを薄く塗り、クッキングシート対応可否を取扱説明書で確認してセットする。','180℃で約8〜12分を目安に加熱する。','中心まで十分に加熱されたことを確認し、レモンを添える。'], tags:['鮭','魚','高たんぱく','時短'], emoji:'🐟', color:'#e5f4ef' },
@@ -89,3 +89,81 @@ export const recipes: Recipe[] = [
   { id:'official-hot-vegetable-salad', title:'グリル野菜のホットサラダ', category:'野菜', sourceType:'official', sourceName:'COSORI公式レシピ（VeSync Japan）', sourceUrl:'https://vesync.jp/pages/cosori-summer-recipe-collection-02', minutes:15, temperature:210, servings:4, difficulty:'ふつう', description:'キャベツ、ブロッコリー、アスパラ、トマト、ベーコンを焼き、塩麹チーズドレッシングを添える温サラダ。', ingredients:['春キャベツ 160g','ブロッコリー 80g','アスパラガス 2本','薄切りベーコン 20g','トマト 1個（約120g）','オリーブオイル 小さじ1','塩麹 大さじ1','粉チーズ 大さじ1','プレーンヨーグルト 大さじ2','こしょう 少々','おろしにんにく 小さじ1/2'], steps:['キャベツは芯を残してくし形、ブロッコリーは小房、アスパラは半分、トマトは横半分、ベーコンは細切りにする。','対応機種のバスケットにアルミホイルを敷き、野菜にオリーブオイルを薄く塗って並べる。','190℃で約4分加熱し、ブロッコリーとアスパラの穂先を取り出す。200℃でさらに約4分加熱し、トマト以外を取り出す。','ベーコンを広げてトマトとともに210℃で約2分加熱する。焼き色を見て調整する。','塩麹、粉チーズ、ヨーグルト、こしょう、オリーブオイル少量、おろしにんにくを混ぜ、焼き野菜に添える。'], tags:['公式','ホットサラダ','野菜','ベーコン','塩麹'], emoji:'🥗', color:'#e5f4ef' },
 
 ]
+
+/**
+ * バリエーションレシピ生成カタログ。
+ * 公式掲載レシピではなく、食材・味付け・調理スタイルを組み合わせた
+ * COSORI TABLE のアイデアレシピ。温度・時間は目安で、試作検証済みを意味しない。
+ */
+const generatedBases = [
+  {name:'鶏もも肉',category:'肉料理',emoji:'🍗',temp:190,minutes:18,ingredients:'鶏もも肉 250g',tag:'鶏肉'},
+  {name:'鶏むね肉',category:'肉料理',emoji:'🍗',temp:185,minutes:16,ingredients:'鶏むね肉 250g（厚みをそろえる）',tag:'鶏肉'},
+  {name:'手羽先',category:'肉料理',emoji:'🍖',temp:190,minutes:22,ingredients:'鶏手羽先 6本',tag:'鶏肉'},
+  {name:'豚ロース',category:'肉料理',emoji:'🥩',temp:190,minutes:14,ingredients:'豚ロース肉 2枚',tag:'豚肉'},
+  {name:'豚こま肉',category:'肉料理',emoji:'🥩',temp:190,minutes:14,ingredients:'豚こま切れ肉 250g',tag:'豚肉'},
+  {name:'鮭',category:'魚料理',emoji:'🐟',temp:180,minutes:12,ingredients:'生鮭 2切れ',tag:'魚'},
+  {name:'たら',category:'魚料理',emoji:'🐟',temp:180,minutes:12,ingredients:'たら 2切れ',tag:'魚'},
+  {name:'むきえび',category:'魚料理',emoji:'🍤',temp:180,minutes:8,ingredients:'むきえび 200g',tag:'えび'},
+  {name:'厚揚げ',category:'大豆・豆腐',emoji:'🍲',temp:190,minutes:12,ingredients:'厚揚げ 1パック',tag:'豆腐'},
+  {name:'木綿豆腐',category:'大豆・豆腐',emoji:'🍲',temp:190,minutes:15,ingredients:'木綿豆腐 1丁（水切りする）',tag:'豆腐'},
+  {name:'じゃがいも',category:'野菜',emoji:'🥔',temp:195,minutes:18,ingredients:'じゃがいも 2個',tag:'野菜'},
+  {name:'さつまいも',category:'野菜',emoji:'🍠',temp:190,minutes:20,ingredients:'さつまいも 250g',tag:'野菜'},
+  {name:'かぼちゃ',category:'野菜',emoji:'🎃',temp:190,minutes:14,ingredients:'かぼちゃ 250g（薄切り）',tag:'野菜'},
+  {name:'れんこん',category:'野菜',emoji:'🥗',temp:190,minutes:13,ingredients:'れんこん 200g（輪切り）',tag:'野菜'},
+  {name:'ブロッコリー',category:'野菜',emoji:'🥦',temp:185,minutes:10,ingredients:'ブロッコリー 1株（小房）',tag:'野菜'},
+  {name:'カリフラワー',category:'野菜',emoji:'🥦',temp:185,minutes:12,ingredients:'カリフラワー 1/2株（小房）',tag:'野菜'},
+  {name:'ズッキーニ',category:'野菜',emoji:'🥒',temp:190,minutes:10,ingredients:'ズッキーニ 1本（輪切り）',tag:'野菜'},
+  {name:'なす',category:'野菜',emoji:'🍆',temp:190,minutes:12,ingredients:'なす 2本（食べやすく切る）',tag:'野菜'},
+  {name:'マッシュルーム',category:'野菜',emoji:'🍄',temp:180,minutes:9,ingredients:'マッシュルーム 200g',tag:'きのこ'},
+  {name:'ミニトマト',category:'野菜',emoji:'🍅',temp:180,minutes:8,ingredients:'ミニトマト 200g',tag:'野菜'},
+  {name:'りんご',category:'スイーツ',emoji:'🍎',temp:170,minutes:12,ingredients:'りんご 1個（くし切り）',tag:'果物'},
+  {name:'バナナ',category:'スイーツ',emoji:'🍌',temp:170,minutes:7,ingredients:'バナナ 2本（縦半分）',tag:'果物'},
+  {name:'食パン',category:'朝食',emoji:'🍞',temp:180,minutes:6,ingredients:'食パン 2枚',tag:'パン'},
+  {name:'冷凍餃子',category:'おつまみ',emoji:'🥟',temp:190,minutes:12,ingredients:'冷凍餃子 8個',tag:'冷凍食品'},
+  {name:'冷凍春巻き',category:'おつまみ',emoji:'🥟',temp:190,minutes:14,ingredients:'冷凍春巻き 4本',tag:'冷凍食品'},
+];
+const generatedFlavors = [
+  {name:'しょうゆガーリック',items:['しょうゆ 大さじ1','おろしにんにく 小さじ1/2','油 小さじ1'],tag:'しょうゆ'},
+  {name:'味噌ごま',items:['味噌 大さじ1','みりん 小さじ2','白すりごま 小さじ2'],tag:'味噌'},
+  {name:'レモンハーブ',items:['オリーブオイル 小さじ2','レモン汁 小さじ2','乾燥ハーブ 小さじ1','塩こしょう 少々'],tag:'レモン'},
+  {name:'カレー風味',items:['カレー粉 小さじ1','オイル 小さじ2','塩 少々'],tag:'カレー'},
+  {name:'甘辛みりん',items:['しょうゆ 大さじ1','みりん 大さじ1','砂糖 小さじ1'],tag:'甘辛'},
+  {name:'塩こうじ',items:['塩こうじ 大さじ1','オリーブオイル 小さじ1','黒こしょう 少々'],tag:'塩こうじ'},
+  {name:'チーズペッパー',items:['粉チーズ 大さじ1','オイル 小さじ1','黒こしょう 少々'],tag:'チーズ'},
+  {name:'韓国風コチュジャン',items:['コチュジャン 小さじ2','しょうゆ 小さじ1','ごま油 小さじ1'],tag:'韓国風'},
+  {name:'バジルトマト',items:['オリーブオイル 小さじ2','乾燥バジル 小さじ1','塩 少々'],tag:'バジル'},
+  {name:'のり塩',items:['オイル 小さじ2','青のり 小さじ1','塩 少々'],tag:'のり塩'},
+];
+const generatedStyles = [
+  {name:'ロースト',desc:'素材のうまみを引き出すシンプルなロースト'},
+  {name:'カリッと焼き',desc:'表面に焼き色をつける香ばしい焼き料理'},
+  {name:'スパイス焼き',desc:'香り豊かな調味料をまとわせたスパイス焼き'},
+  {name:'おかず焼き',desc:'ごはんに合わせやすい毎日のおかず'},
+];
+const generatedRecipes: Recipe[] = generatedBases.flatMap((base, bi) =>
+  generatedFlavors.flatMap((flavor, fi) =>
+    generatedStyles.map((style, si) => {
+      const id = 'idea-' + String(bi*40 + fi*4 + si + 1).padStart(4,'0');
+      const temp = base.temp + (si===1 ? 5 : si===2 ? 0 : si===3 ? -5 : 0);
+      const mins = Math.max(4, base.minutes + (si===1 ? 2 : si===2 ? 1 : si===3 ? -2 : 0));
+      return {
+        id, title: base.name + 'の' + flavor.name + style.name,
+        category: base.category, sourceType:'original' as const, sourceName:'COSORI TABLE オリジナルアレンジ',
+        minutes: mins, temperature: temp, servings:2,
+        difficulty: (bi < 10 ? 'かんたん' : 'ふつう') as 'かんたん'|'ふつう',
+        description: base.name + 'を' + flavor.name + 'で味付けしたアレンジ案。' + style.desc + '。',
+        ingredients:[base.ingredients, ...flavor.items, '必要に応じて油スプレー 少量'],
+        steps:[
+          '食材を洗って水気を拭き、必要に応じて食べやすい大きさ・厚さにそろえる。',
+          '調味料を混ぜ、食材全体に薄く絡める。焦げやすい甘味料は加熱後半に加える。',
+          'ノンフライヤーを' + temp + '℃に設定し、食材を重ならないように並べる。',
+          temp + '℃で約' + mins + '分を目安に加熱し、途中で裏返す・振るなどして均一に仕上げる。',
+          '焼き色と火の通りを確認し、不足があれば短時間ずつ追加加熱する。肉・魚は中心まで十分に加熱し、機種の説明書と食材の安全な加熱基準を優先する。'
+        ],
+        tags:[base.tag, flavor.tag, style.name, 'オリジナルアレンジ', '加熱時間は目安'],
+        emoji:base.emoji, color: bi%3===0?'#fff0df':bi%3===1?'#e5f4ef':'#fff4c9'
+      };
+    })
+  )
+);
+export const recipes: Recipe[] = [...baseRecipes, ...generatedRecipes];
